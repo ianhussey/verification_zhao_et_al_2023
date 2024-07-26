@@ -215,6 +215,13 @@ ggsave(filename = "verification_zhao_2023_comparisons_plot.pdf",
        width = 7,
        height = 4.5)
 
+ggsave(filename = "verification_zhao_2023_comparisons_plot.png", 
+       path = "../../communciations/plots/",
+       create.dir = TRUE,
+       dpi = 600,
+       width = 7,
+       height = 4.5)
+
 
 # compared_es |>
 #   mutate(yi = ifelse(Comparison != "Inconsistent" & Source == "Reextracted", NA, yi),

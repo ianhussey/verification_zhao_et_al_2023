@@ -2923,20 +2923,27 @@ Consistent
 <span id="cb15-4"><a href="#cb15-4" tabindex="-1"></a>       <span class="at">width =</span> <span class="dv">7</span>,</span>
 <span id="cb15-5"><a href="#cb15-5" tabindex="-1"></a>       <span class="at">height =</span> <span class="fl">4.5</span>)</span>
 <span id="cb15-6"><a href="#cb15-6" tabindex="-1"></a></span>
-<span id="cb15-7"><a href="#cb15-7" tabindex="-1"></a></span>
-<span id="cb15-8"><a href="#cb15-8" tabindex="-1"></a><span class="co"># compared_es |&gt;</span></span>
-<span id="cb15-9"><a href="#cb15-9" tabindex="-1"></a><span class="co">#   mutate(yi = ifelse(Comparison != &quot;Inconsistent&quot; &amp; Source == &quot;Reextracted&quot;, NA, yi),</span></span>
-<span id="cb15-10"><a href="#cb15-10" tabindex="-1"></a><span class="co">#          vi = ifelse(Comparison != &quot;Inconsistent&quot; &amp; Source == &quot;Reextracted&quot;, NA, vi)) |&gt;</span></span>
-<span id="cb15-11"><a href="#cb15-11" tabindex="-1"></a><span class="co">#   ggplot(aes(yi, study, color = Source, shape = Comparison)) +</span></span>
-<span id="cb15-12"><a href="#cb15-12" tabindex="-1"></a><span class="co">#   geom_vline(xintercept = 0, linetype = &quot;dotted&quot;) +</span></span>
-<span id="cb15-13"><a href="#cb15-13" tabindex="-1"></a><span class="co">#   geom_linerangeh(aes(xmin = yi - vi*1.96, xmax = yi + vi*1.96), position = position_dodge(width = 0.65)) +</span></span>
-<span id="cb15-14"><a href="#cb15-14" tabindex="-1"></a><span class="co">#   geom_point(position = position_dodge(width = 0.65), size = 2) +</span></span>
-<span id="cb15-15"><a href="#cb15-15" tabindex="-1"></a><span class="co">#   theme_linedraw() +</span></span>
-<span id="cb15-16"><a href="#cb15-16" tabindex="-1"></a><span class="co">#   scale_color_viridis_d(begin = 0.2, end = 0.6, direction = -1,</span></span>
-<span id="cb15-17"><a href="#cb15-17" tabindex="-1"></a><span class="co">#                      guide = guide_legend(reverse = TRUE)) +</span></span>
-<span id="cb15-18"><a href="#cb15-18" tabindex="-1"></a><span class="co">#   scale_shape_manual(values = c(&quot;Consistent&quot; = 16, &quot;Indeterminable&quot; = 1, &quot;Inconsistent&quot; = 4)) +</span></span>
-<span id="cb15-19"><a href="#cb15-19" tabindex="-1"></a><span class="co">#   ylab(&quot;&quot;) +</span></span>
-<span id="cb15-20"><a href="#cb15-20" tabindex="-1"></a><span class="co">#   xlab(&quot;Standardized Mean Difference&quot;)</span></span></code></pre></div>
+<span id="cb15-7"><a href="#cb15-7" tabindex="-1"></a><span class="fu">ggsave</span>(<span class="at">filename =</span> <span class="st">&quot;verification_zhao_2023_comparisons_plot.png&quot;</span>, </span>
+<span id="cb15-8"><a href="#cb15-8" tabindex="-1"></a>       <span class="at">path =</span> <span class="st">&quot;../../communciations/plots/&quot;</span>,</span>
+<span id="cb15-9"><a href="#cb15-9" tabindex="-1"></a>       <span class="at">create.dir =</span> <span class="cn">TRUE</span>,</span>
+<span id="cb15-10"><a href="#cb15-10" tabindex="-1"></a>       <span class="at">dpi =</span> <span class="dv">600</span>,</span>
+<span id="cb15-11"><a href="#cb15-11" tabindex="-1"></a>       <span class="at">width =</span> <span class="dv">7</span>,</span>
+<span id="cb15-12"><a href="#cb15-12" tabindex="-1"></a>       <span class="at">height =</span> <span class="fl">4.5</span>)</span>
+<span id="cb15-13"><a href="#cb15-13" tabindex="-1"></a></span>
+<span id="cb15-14"><a href="#cb15-14" tabindex="-1"></a></span>
+<span id="cb15-15"><a href="#cb15-15" tabindex="-1"></a><span class="co"># compared_es |&gt;</span></span>
+<span id="cb15-16"><a href="#cb15-16" tabindex="-1"></a><span class="co">#   mutate(yi = ifelse(Comparison != &quot;Inconsistent&quot; &amp; Source == &quot;Reextracted&quot;, NA, yi),</span></span>
+<span id="cb15-17"><a href="#cb15-17" tabindex="-1"></a><span class="co">#          vi = ifelse(Comparison != &quot;Inconsistent&quot; &amp; Source == &quot;Reextracted&quot;, NA, vi)) |&gt;</span></span>
+<span id="cb15-18"><a href="#cb15-18" tabindex="-1"></a><span class="co">#   ggplot(aes(yi, study, color = Source, shape = Comparison)) +</span></span>
+<span id="cb15-19"><a href="#cb15-19" tabindex="-1"></a><span class="co">#   geom_vline(xintercept = 0, linetype = &quot;dotted&quot;) +</span></span>
+<span id="cb15-20"><a href="#cb15-20" tabindex="-1"></a><span class="co">#   geom_linerangeh(aes(xmin = yi - vi*1.96, xmax = yi + vi*1.96), position = position_dodge(width = 0.65)) +</span></span>
+<span id="cb15-21"><a href="#cb15-21" tabindex="-1"></a><span class="co">#   geom_point(position = position_dodge(width = 0.65), size = 2) +</span></span>
+<span id="cb15-22"><a href="#cb15-22" tabindex="-1"></a><span class="co">#   theme_linedraw() +</span></span>
+<span id="cb15-23"><a href="#cb15-23" tabindex="-1"></a><span class="co">#   scale_color_viridis_d(begin = 0.2, end = 0.6, direction = -1,</span></span>
+<span id="cb15-24"><a href="#cb15-24" tabindex="-1"></a><span class="co">#                      guide = guide_legend(reverse = TRUE)) +</span></span>
+<span id="cb15-25"><a href="#cb15-25" tabindex="-1"></a><span class="co">#   scale_shape_manual(values = c(&quot;Consistent&quot; = 16, &quot;Indeterminable&quot; = 1, &quot;Inconsistent&quot; = 4)) +</span></span>
+<span id="cb15-26"><a href="#cb15-26" tabindex="-1"></a><span class="co">#   ylab(&quot;&quot;) +</span></span>
+<span id="cb15-27"><a href="#cb15-27" tabindex="-1"></a><span class="co">#   xlab(&quot;Standardized Mean Difference&quot;)</span></span></code></pre></div>
 </div>
 <div id="updated-meta-analysis-of-all-11-studies" class="section level2">
 <h2>Updated meta-analysis of all 11 studies</h2>
