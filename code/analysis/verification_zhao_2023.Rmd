@@ -239,6 +239,54 @@ ggsave(filename = "verification_zhao_2023_comparisons_plot.png",
 
 ```
 
+
+```{r fig.height=5, fig.width=5}
+
+# library(wesanderson)
+# library(RColorBrewer)
+
+compared_es |>
+  select(study, Source, yi) |>
+  pivot_wider(names_from = Source, 
+              values_from = yi) |>
+  rename(zhao = "Zhao et al. (2023)",
+         reextracted = Reextracted) |>
+  mutate(Match = zhao == reextracted) |>
+  ggplot(aes(zhao, reextracted, shape = Match)) +
+  geom_abline(slope = 1, linetype = "dotted", alpha = 0.5) +
+  geom_point(size = 2.25, alpha = 0.9) +
+  theme_classic() +
+  #scale_color_viridis_d(begin = 0.3, end = 0.6, option = "mako") +
+  scale_shape_manual(values = c(4, 16)) +
+  #scale_color_manual(values = wes_palette(n = 2, name = "Royal1")) +
+  #scale_color_brewer(palette = "Dark2") +
+  scale_x_continuous(breaks = scales::breaks_pretty(), 
+                     limit = c(-3, 3),
+                     name = "Reported in Zhao et al. (2023)") +
+  scale_y_continuous(breaks = scales::breaks_pretty(), 
+                     limit = c(-3, 3),
+                     name = "Re-extracted from original articles") +
+  theme(legend.position = "bottom") + 
+  #legend.box.background = element_rect(colour = "black")) +
+  annotate("text", x = 1.5, y = -1.5, size = 3, label = "Overestimates effect size") +
+  annotate("text", x = -1.5, y = 1.5, size = 3, label = "Underestimates effect size") + 
+  coord_fixed(ratio = 1)
+
+ggsave(filename = "verification_zhao_2023_comparisons_plot_alt.pdf", 
+       path = "../../communciations/plots/",
+       create.dir = TRUE,
+       width = 5,
+       height = 4.5)
+
+ggsave(filename = "verification_zhao_2023_comparisons_plot_alt.png", 
+       path = "../../communciations/plots/",
+       create.dir = TRUE,
+       dpi = 600,
+       width = 5,
+       height = 4.5)
+
+```
+
 ## Updated meta-analysis of all 11 studies
 
 Following the same workflow as Zhao et al. (2023), a random effects meta-analysis was then fit to all 11 sets of effect sizes (i.e., including the 3 that were indeterminable, on the liberal assumption that they are correct).
