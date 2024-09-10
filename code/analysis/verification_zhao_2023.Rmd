@@ -40,6 +40,24 @@ heterogeneity_metrics <- function(fit){
          "%, H^2 = ", janitor::round_half_up(fit$H2, 2))
 }
 
+# function to convert Cohen's d to NNT. NB this approximates Ruscio's A (ie probability of superiority) from cohen's d rather than calculating it directly.
+d_to_nnt <- function(d) {
+  # Calculate the area under the curve (AUC) using the cumulative distribution function
+  auc <- pnorm(d / sqrt(2))
+  
+  # Calculate the risk difference (RD)
+  rd <- 2 * (auc - 0.5)
+  
+  # Calculate the NNT
+  nnt <- 1 / abs(rd)
+  
+  return(nnt)
+}
+
+round_with_zeros <- function(x, digits = 1) {
+  sprintf(paste0("%.", digits, "f"), janitor::round_half_up(x, digits))
+}
+
 ```
 
 # Reproduce Zhao's results
@@ -87,9 +105,9 @@ forest(fit_zhao_all)
 
 fit_zhao_all
 
-heterogeneity_metrics(fit_zhao_all)
-
 ```
+
+`r heterogeneity_metrics(fit_zhao_all)`
 
 ## Outlier/undue influence tests
 
@@ -127,13 +145,17 @@ forest(fit_zhao_excl_atjak)
 
 fit_zhao_excl_atjak
 
-heterogeneity_metrics(fit_zhao_excl_atjak)
-
 ```
 
 Zhao et al.'s (2023) forest plot in Figure 4 reported: Meta-analytic d = -1.05, 95% CI [-1.44, -0.66]. The results above therefore reproduce this result from the summary statistics reported in that forest plot.
 
-# Reexracted
+`r heterogeneity_metrics(fit_zhao_excl_atjak)`
+
+### NNT
+
+NNT = `r round_half_up(d_to_nnt(as.numeric(fit_zhao_excl_atjak$beta[,1])), 2)`, 95% CI [`r round_half_up(d_to_nnt(as.numeric(fit_zhao_excl_atjak$ci.lb)), 2)`, `r round_half_up(d_to_nnt(as.numeric(fit_zhao_excl_atjak$ci.ub)), 2)`]
+
+# Re-extracted
 
 Although the results reported in Figure 4 can be reproduced from the summary statistics reported in Figure 4, the validity of those results are reliant on the summary statistics being accurately extracted from the original studies. Recent work has shown that this is frequently not the case (e.g., Maassen et al., 2020). I therefore attempted to extract the Mean, SD, and N for the ACT and control conditions at the post-intervention time point for each of the original studies.
 
@@ -326,9 +348,9 @@ forest(fit_reextracted, addpred = TRUE)
 
 fit_reextracted
 
-heterogeneity_metrics(fit_reextracted)
-
 ```
+
+`r heterogeneity_metrics(fit_reextracted)`
 
 ## Outlier/undue influence tests
 
@@ -368,19 +390,19 @@ forest(fit_reextracted_excl_zemestani, addpred = TRUE)
 
 fit_reextracted_excl_zemestani
 
-heterogeneity_metrics(fit_reextracted_excl_zemestani)
-
-
-# reduction in ES compared to Zhao
-round_with_zeros <- function(x, digits = 1) {
-  sprintf(paste0("%.", digits, "f"), janitor::round_half_up(x, digits))
-}
-
 percent_change_in_ES <- round_with_zeros(as.numeric((fit_reextracted_excl_zemestani$b/fit_zhao_excl_atjak$b *100)) - 100)
 
 ```
 
 A significant meta-analytic effect was still found, but this effect was `r percent_change_in_ES`% smaller than that reported by Zhao et al. (2023) after correcting the data extraction errors and refitting the meta-analysis and sensitivity analysis workflow. 
+
+`r heterogeneity_metrics(fit_reextracted_excl_zemestani)`
+
+### NNT
+
+NNT = `r round_half_up(d_to_nnt(as.numeric(fit_reextracted_excl_zemestani$beta[,1])), 2)`, 95% CI [`r round_half_up(d_to_nnt(as.numeric(fit_reextracted_excl_zemestani$ci.lb)), 2)`, `r round_half_up(d_to_nnt(as.numeric(fit_reextracted_excl_zemestani$ci.ub)), 2)`]
+
+# Preemptive response
 
 To preempt one possible response to these concerns: readers might argue something along the lines of "the conclusions of Zhao et al. (2023) are not substantially affected by the correction of these errors, and therefore there is no strong need for concern." However, any such reactions should be seen as worrisome rather than encouraging: meta-analyses are often argued to be at the top of the Evidence Pyramid, and their goal is to precisely estimate the true effect size beyond merely estimating whether the true effect size is non-zero or not. To retreat to the weaker position that the obtained effect size does not substantively matter is to undermine the point of doing the meta-analysis in the first place. Either the empirical estimates matter or they don't. 
 
