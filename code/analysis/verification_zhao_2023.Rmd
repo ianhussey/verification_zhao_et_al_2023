@@ -32,6 +32,14 @@ library(ggstance)
 library(knitr)
 library(kableExtra)
 
+heterogeneity_metrics <- function(fit){
+  paste0("Heterogeneity: Q(df = ", fit$k - 1, ") = ", janitor::round_half_up(fit$QE, 2), 
+         ", p ", ifelse(fit$QEp < 0.0001, "< .0001", paste0("= ", as.character(janitor::round_half_up(fit$QEp, 4)))),
+         ", tau^2 = ", janitor::round_half_up(fit$tau2, 4),
+         ", I^2 = ", janitor::round_half_up(fit$I2, 1),
+         "%, H^2 = ", janitor::round_half_up(fit$H2, 2))
+}
+
 ```
 
 # Reproduce Zhao's results
@@ -79,6 +87,8 @@ forest(fit_zhao_all)
 
 fit_zhao_all
 
+heterogeneity_metrics(fit_zhao_all)
+
 ```
 
 ## Outlier/undue influence tests
@@ -116,6 +126,8 @@ fit_zhao_excl_atjak <-
 forest(fit_zhao_excl_atjak)
 
 fit_zhao_excl_atjak
+
+heterogeneity_metrics(fit_zhao_excl_atjak)
 
 ```
 
@@ -314,6 +326,8 @@ forest(fit_reextracted, addpred = TRUE)
 
 fit_reextracted
 
+heterogeneity_metrics(fit_reextracted)
+
 ```
 
 ## Outlier/undue influence tests
@@ -353,6 +367,9 @@ fit_reextracted_excl_zemestani <-
 forest(fit_reextracted_excl_zemestani, addpred = TRUE)
 
 fit_reextracted_excl_zemestani
+
+heterogeneity_metrics(fit_reextracted_excl_zemestani)
+
 
 # reduction in ES compared to Zhao
 round_with_zeros <- function(x, digits = 1) {
