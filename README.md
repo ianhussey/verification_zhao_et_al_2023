@@ -6,8 +6,7 @@
 
 ## License
 
-- Code and data other than the report: MIT license
-- .docx and .pdf report in the communciations/preprint directory: CC-By 4.0
+- CC-By 4.0
 
 
 

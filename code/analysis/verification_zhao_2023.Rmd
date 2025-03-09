@@ -101,7 +101,7 @@ fit_zhao_all <-
       slab = study,
       method = "DL") # NB Zhao et al. used the Revman software, which uses a DerSimonian-Laird estimator by default. I therefore use it here in all models.
 
-forest(fit_zhao_all)
+forest(fit_zhao_all, addpred = TRUE)
 
 fit_zhao_all
 
@@ -141,7 +141,7 @@ fit_zhao_excl_atjak <-
       slab = study,
       method = "DL") 
 
-forest(fit_zhao_excl_atjak)
+forest(fit_zhao_excl_atjak, addpred = TRUE)
 
 fit_zhao_excl_atjak
 
@@ -192,7 +192,9 @@ comparisons <-
                                   sd_control != lag(sd_control) | 
                                   n_exp != lag(n_exp) | 
                                   n_control != lag(n_control) ~ "Inconsistent", 
-                                TRUE ~ "Consistent"))
+                                TRUE ~ "Consistent")) |>
+  mutate(comparison = case_when((study == "Ren Zhihong 2012" & source == "Reextracted") ~ "Duplicate",
+                                TRUE ~ comparison))
 
 # summary table
 comparisons |>
@@ -229,8 +231,9 @@ compared_es <- comparisons %>%
          n1i = n_exp,
          n2i = n_control, 
          data = .) |>
-  mutate(Comparison = ifelse(comparison == "", lead(comparison), comparison)) |>
-  rename(Source = source) 
+  mutate(Comparison = ifelse(comparison == "", lead(comparison), comparison),
+         Comparison = fct_relevel(Comparison, "Consistent", "Inconsistent", "Duplicate", "Indeterminable")) |>
+  rename(Source = source)
 
 ggplot(compared_es, aes(yi, study, color = Source, shape = Comparison)) +
   geom_vline(xintercept = 0, linetype = "dotted") +
@@ -239,7 +242,7 @@ ggplot(compared_es, aes(yi, study, color = Source, shape = Comparison)) +
   theme_linedraw() +
   scale_color_viridis_d(begin = 0.2, end = 0.6, direction = -1,
                      guide = guide_legend(reverse = TRUE)) +
-  scale_shape_manual(values = c("Consistent" = 16, "Indeterminable" = 1, "Inconsistent" = 4)) +
+  scale_shape_manual(values = c("Consistent" = 16, "Indeterminable" = 1, "Inconsistent" = 4, "Duplicate" = 3)) +
   ylab("") +
   xlab("Standardized Mean Difference")
 
@@ -321,13 +324,14 @@ ggsave(filename = "verification_zhao_2023_comparisons_plot_alt.png",
 
 ```
 
-## Updated meta-analysis of all 11 studies
+## Updated meta-analysis of the 10 studies after excluding the duplicate
 
-Following the same workflow as Zhao et al. (2023), a random effects meta-analysis was then fit to all 11 sets of effect sizes (i.e., including the 3 that were indeterminable, on the liberal assumption that they are correct).
+Following the same workflow as Zhao et al. (2023), a random effects meta-analysis was then fit to the 10 sets of effect sizes (i.e., including the 3 that were indeterminable, on the liberal assumption that they are correct, but excluding the duplicate on the reasonable assumption that it is not).
 
 ```{r}
 
-data_reextracted <- data_reextracted %>%
+data_reextracted_excluded <- data_reextracted %>%
+  filter(study != "Ren Zhihong 2012") %>%
   escalc(measure = "SMD",
          m1i = mean_exp,
          m2i = mean_control,
@@ -338,7 +342,7 @@ data_reextracted <- data_reextracted %>%
          data = .) 
 
 fit_reextracted <- 
-  rma(data = data_reextracted,
+  rma(data = data_reextracted_excluded,
       yi = yi,
       vi = vi,
       slab = study,
@@ -372,15 +376,15 @@ Note that there are additional reasons to exclude the results of Zemestani et al
 
 ## Sensitivity analysis: Exclude Zemestani et al. (2020)
 
-I therefore fitted a new meta-analysis to the remaining 10 studies after excluding Zemestani et al. (2020).
+I therefore fitted a new meta-analysis to the remaining 9 studies after excluding Zemestani et al. (2020).
 
 ```{r}
 
-data_reextracted_excl_zemestani <- data_reextracted |>
+data_reextracted_excluded_zemestani <- data_reextracted_excluded |>
   filter(study != "Mehdi Zemestani 2020")
 
 fit_reextracted_excl_zemestani <- 
-  rma(data = data_reextracted_excl_zemestani,
+  rma(data = data_reextracted_excluded_zemestani,
       yi = yi,
       vi = vi,
       slab = study,
