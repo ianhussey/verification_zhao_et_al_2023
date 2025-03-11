@@ -406,6 +406,33 @@ A significant meta-analytic effect was still found, but this effect was `r perce
 
 NNT = `r round_half_up(d_to_nnt(as.numeric(fit_reextracted_excl_zemestani$beta[,1])), 2)`, 95% CI [`r round_half_up(d_to_nnt(as.numeric(fit_reextracted_excl_zemestani$ci.lb)), 2)`, `r round_half_up(d_to_nnt(as.numeric(fit_reextracted_excl_zemestani$ci.ub)), 2)`]
 
+## Bias correction via Robust Bayesian Meta-Analysis
+
+Zhao et al. (2023) employ a sensitivity analysis to remove outlier studies (but not studies flagged in the risk of bias assessment), but they do not employ any bias correction method to correct for sources such as publication bias. Here I use Robust Bayesian Meta-Analysis (RoBMA), an ensemble method of correcting for potential sources of bias.
+
+```{r}
+
+library(RoBMA)
+
+set.seed(42)
+
+# Bayesian selection model
+roBMA_model <- RoBMA(d = data_reextracted_excluded_zemestani$yi, 
+                     se = sqrt(data_reextracted_excluded_zemestani$vi),
+                     effect_direction = "negative",
+                     prior_scale = "cohens_d",
+                     study_names = data_reextracted_excluded_zemestani$study,
+                     parallel = TRUE)
+
+
+# summary(roBMA_model)
+
+interpret(roBMA_model)
+
+```
+
+Results from the RoBMA suggest that the true effect size may be a) smaller again and b) not detectably different from zero. 
+
 # Preemptive response
 
 To preempt one possible response to these concerns: readers might argue something along the lines of "the conclusions of Zhao et al. (2023) are not substantially affected by the correction of these errors, and therefore there is no strong need for concern." However, any such reactions should be seen as worrisome rather than encouraging: meta-analyses are often argued to be at the top of the Evidence Pyramid, and their goal is to precisely estimate the true effect size beyond merely estimating whether the true effect size is non-zero or not. To retreat to the weaker position that the obtained effect size does not substantively matter is to undermine the point of doing the meta-analysis in the first place. Either the empirical estimates matter or they don't. 
